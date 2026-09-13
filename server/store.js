@@ -38,6 +38,17 @@ function clearAssignments(sessionId = 'default-session') {
   sessions.set(sessionId, []);
 }
 
+function updateAssignmentDeadline(sessionId = 'default-session', assignmentId, deadlineIso) {
+  const current = getAssignments(sessionId);
+  const assignment = current.find(a => a.id === assignmentId);
+  if (!assignment) return null;
+
+  assignment.deadline = deadlineIso;
+  assignment.deadlineText = new Date(deadlineIso).toLocaleString();
+  assignment.isManualDeadline = true;
+  return assignment;
+}
+
 module.exports = {
   getSessionId,
   getAssignments,
@@ -45,4 +56,5 @@ module.exports = {
   addAssignments,
   removeAssignment,
   clearAssignments,
+  updateAssignmentDeadline,
 };

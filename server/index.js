@@ -11,7 +11,8 @@ const {
   getAssignments,
   addAssignments,
   removeAssignment,
-  clearAssignments
+  clearAssignments,
+  updateAssignmentDeadline
 } = require('./store');
 
 const app = express();
@@ -127,6 +128,35 @@ app.delete('/api/assignments', (req, res) => {
     clearAssignments(sessionId);
     const timeline = buildTimeline([]);
     res.json({ success: true, message: 'All assignments cleared.', timeline });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH /api/assignments/:id/deadline — Manually update assignment deadline
+app.patch('/api/assignments/:id/deadline', (req, res) => {
+  try {
+    const sessionId = getSessionId(req);
+    const { id } = req.params;
+    const { deadline } = req.body || {};
+
+    if (!deadline || typeof deadline !== 'string' || !deadline.trim()) {
+      return res.status(400).json({ error: 'A valid deadline date and time is required.' });
+    }
+
+    const parsedDate = new Date(deadline);
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid deadline date and time format provided.' });
+    }
+
+    const updated = updateAssignmentDeadline(sessionId, id, parsedDate.toISOString());
+    if (!updated) {
+      return res.status(404).json({ error: 'Assignment not found.' });
+    }
+
+    const updatedRaw = getAssignments(sessionId);
+    const timeline = buildTimeline(updatedRaw);
+    res.json({ success: true, message: 'Deadline updated successfully.', timeline });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

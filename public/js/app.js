@@ -172,6 +172,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Save Manual Deadline ---
+  async function saveManualDeadline(id, deadlineValue) {
+    if (!deadlineValue) {
+      showError('Please select a valid date and time for the deadline.');
+      return;
+    }
+
+    const dateObj = new Date(deadlineValue);
+    if (isNaN(dateObj.getTime())) {
+      showError('Invalid date/time selected.');
+      return;
+    }
+
+    showLoading('Updating deadline & recalculating timeline...');
+    hideError();
+
+    try {
+      const res = await fetch(`/api/assignments/${id}/deadline`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deadline: dateObj.toISOString() }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to update deadline.');
+      }
+
+      renderTimeline(data.timeline);
+    } catch (err) {
+      showError(err.message || 'An error occurred while saving the deadline.');
+    } finally {
+      hideLoading();
+    }
+  }
+
   // --- Render Full Timeline View ---
   function renderTimeline(timeline) {
     if (!timeline || !timeline.assignments || timeline.assignments.length === 0) {
@@ -240,8 +277,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = `assignment-card ${assignment.priority}`;
 
-      const formattedDeadline = assignment.deadlineText ||
-        (assignment.deadline ? new Date(assignment.deadline).toLocaleDateString() : 'No explicit deadline');
+      const hasDeadline = Boolean(assignment.deadline);
+      let deadlineHTML = '';
+
+      if (hasDeadline) {
+        const formattedDeadline = assignment.deadlineText || new Date(assignment.deadline).toLocaleString();
+        deadlineHTML = `<div>📅 <strong>Deadline:</strong> ${escapeHtml(formattedDeadline)}${assignment.isManualDeadline ? ` <span class="badge tag-effort" style="font-weight:normal; text-transform:none; margin-left:0.35rem;">Manually added</span>` : ''}</div>`;
+      } else {
+        deadlineHTML = `
+          <div>
+            <span>📅 <strong>Deadline:</strong> <span style="color: var(--urgency-medium); font-weight:600;">Deadline not specified</span></span>
+            <button class="btn btn-secondary add-deadline-toggle-btn" style="padding:0.2rem 0.55rem; font-size:0.78rem; margin-left:0.5rem;" data-id="${assignment.id}">+ Add Deadline</button>
+            <div id="deadlineForm-${assignment.id}" class="hidden" style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+              <input type="datetime-local" id="deadlineInput-${assignment.id}" style="background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.35rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.82rem; color-scheme: dark;" />
+              <button class="btn btn-primary save-deadline-btn" style="padding:0.25rem 0.65rem; font-size:0.78rem;" data-id="${assignment.id}">Save</button>
+              <button class="btn btn-secondary cancel-deadline-btn" style="padding:0.25rem 0.65rem; font-size:0.78rem;" data-id="${assignment.id}">Cancel</button>
+            </div>
+          </div>
+        `;
+      }
 
       const reqsHTML = (assignment.requirements && assignment.requirements.length > 0)
         ? `
@@ -271,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         
         <div class="card-details">
-          <div>📅 <strong>Deadline:</strong> ${escapeHtml(formattedDeadline)}</div>
+          ${deadlineHTML}
           ${assignment.notes ? `<div>📝 <strong>Notes:</strong> ${escapeHtml(assignment.notes)}</div>` : ''}
         </div>
 
@@ -286,6 +340,35 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', (e) => {
         const id = e.target.getAttribute('data-id');
         if (id) deleteAssignment(id);
+      });
+    });
+
+    // Attach toggle add-deadline form handlers
+    document.querySelectorAll('.add-deadline-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const form = document.getElementById(`deadlineForm-${id}`);
+        if (form) form.classList.toggle('hidden');
+      });
+    });
+
+    // Attach cancel deadline form handlers
+    document.querySelectorAll('.cancel-deadline-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const form = document.getElementById(`deadlineForm-${id}`);
+        if (form) form.classList.add('hidden');
+      });
+    });
+
+    // Attach save deadline handlers
+    document.querySelectorAll('.save-deadline-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.target.getAttribute('data-id');
+        const input = document.getElementById(`deadlineInput-${id}`);
+        if (id && input) {
+          saveManualDeadline(id, input.value);
+        }
       });
     });
   }
