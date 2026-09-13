@@ -7,7 +7,7 @@
 ## 🚀 Key Features
 
 - 📄 **PDF Assignment Processing**: Upload 1 or multiple PDF syllabus/assignment documents simultaneously.
-- 🤖 **AI-Powered Extraction**: Uses Google Gemini API (`gemini-2.5-flash`) to parse assignment title, course, due dates, difficulty, estimated effort hours, and key deliverable checklists.
+- 🤖 **AI-Powered Extraction**: Uses Google Gemini API (`gemini-3.6-flash`) to parse assignment title, course, due dates, difficulty, estimated effort hours, and key deliverable checklists.
 - ⚡ **Deterministic Priority Engine**: Computes a transparent **Urgency Score (0–100)** considering deadline proximity, estimated workload, and difficulty.
 - 🎯 **"YOUR NEXT MOVE" Recommendation**: Automatically highlights the single highest-priority task with a human-readable explanation reason.
 - ⚠️ **48-Hour Congestion Detector**: Identifies deadline clusters within 48 hours and flags total accumulated workload hours.
@@ -19,7 +19,7 @@
 
 - **Backend**: Node.js, Express.js, Multer
 - **PDF Extraction**: `pdfjs-dist` (Mozilla PDF.js)
-- **AI Integration**: Official `@google/genai` SDK (`gemini-2.5-flash`)
+- **AI Integration**: Official `@google/genai` SDK (`gemini-3.6-flash`)
 - **Frontend**: Vanilla HTML5 / CSS3 / ES6 JavaScript (Zero frontend framework dependencies)
 
 ---
