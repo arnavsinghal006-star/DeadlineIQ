@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeadlineIQ — Intelligent Academic Timeline</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <h1 class="brand-title">DeadlineIQ</h1>
+          <p class="brand-tagline">AI-Powered Assignment Timeline & Recommendation</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="resetBtn" class="btn btn-secondary hidden" title="Clear current session">
+          Reset Timeline
+        </button>
+      </div>
+    </header>
+
+    <!-- Upload Card -->
+    <section class="upload-card">
+      <div class="upload-dropzone" id="dropzone">
+        <div class="upload-icon">📄</div>
+        <div class="upload-prompt">Drag & drop assignment PDFs here, or click to browse</div>
+        <div class="upload-subtext">Supports PDF format • Max 10MB per file</div>
+        <input type="file" id="fileInput" accept="application/pdf" multiple class="hidden" />
+      </div>
+
+      <!-- Selected file preview list -->
+      <div id="fileList" class="file-list hidden"></div>
+
+      <!-- Action Button -->
+      <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
+        <button id="uploadBtn" class="btn btn-primary" disabled>
+          <span>Extract Assignments & Build Timeline</span>
+        </button>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loadingBox" class="loading-box hidden">
+        <div class="spinner"></div>
+        <span id="loadingMessage">Extracting text & processing with Gemini AI...</span>
+      </div>
+
+      <!-- Error alert -->
+      <div id="errorBanner" class="error-banner hidden">
+        <span id="errorMessage">An error occurred during upload.</span>
+        <button id="dismissErrorBtn" class="btn btn-secondary" style="padding: 0.2rem 0.6rem; font-size: 0.78rem;">Dismiss</button>
+      </div>
+    </section>
+
+    <!-- YOUR NEXT MOVE Hero Card -->
+    <section id="heroSection" class="hero-recommendation hidden">
+      <div class="hero-header">
+        <span class="hero-badge">⚡ YOUR NEXT MOVE</span>
+        <span id="heroPriorityBadge" class="badge">CRITICAL</span>
+      </div>
+      <h2 id="heroTitle" class="hero-title">Assignment Title</h2>
+      <p id="heroReason" class="hero-reason">Loading recommendation...</p>
+      <div class="hero-meta">
+        <div class="meta-pill">Course: <strong id="heroCourse">CS 201</strong></div>
+        <div class="meta-pill">Deadline: <strong id="heroDeadline">Tomorrow at 11:59 PM</strong></div>
+        <div class="meta-pill">Est. Effort: <strong id="heroEffort">5 hrs</strong></div>
+        <div class="meta-pill">Urgency Score: <strong id="heroUrgencyScore">85/100</strong></div>
+      </div>
+    </section>
+
+    <!-- Conflict Warnings Container -->
+    <section id="conflictsContainer" class="hidden" style="display: flex; flex-direction: column; gap: 0.75rem;"></section>
+
+    <!-- Stats Grid -->
+    <section id="statsGrid" class="stats-grid hidden">
+      <div class="stat-card">
+        <div class="stat-label">Total Assignments</div>
+        <div id="statTotal" class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Workload</div>
+        <div id="statHours" class="stat-value">0 hrs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Overdue Tasks</div>
+        <div id="statOverdue" class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Busiest Course</div>
+        <div id="statBusiest" class="stat-value">—</div>
+      </div>
+    </section>
+
+    <!-- Main Timeline List -->
+    <section id="timelineSection" class="hidden">
+      <div class="timeline-section-title" style="margin-bottom: 1rem;">
+        <h2>Actionable Academic Timeline</h2>
+      </div>
+      <div id="timelineList" class="timeline-list"></div>
+    </section>
+
+    <!-- Empty State -->
+    <section id="emptyState" class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3 class="empty-title">Your timeline is empty</h3>
+      <p class="empty-desc">
+        Upload one or more assignment PDF documents above. DeadlineIQ will extract due dates, course names, and workload estimates to build your prioritized academic schedule.
+      </p>
+    </section>
+
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

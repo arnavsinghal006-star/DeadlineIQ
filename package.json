@@ -1,0 +1,23 @@
+{
+  "name": "deadlineiq",
+  "version": "1.0.0",
+  "description": "AI-Powered Assignment Deadline Timeline",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^2.22.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.3.0",
+    "pdfjs-dist": "^4.4.168",
+    "uuid": "^14.0.2"
+  },
+  "devDependencies": {
+    "pdfkit": "^0.20.2"
+  }
+}
